@@ -1,6 +1,6 @@
 pipeline {
     environment {
-   # BUILD_SCRIPTS='tomcat-deploy-pipeline'
+    BUILD_SCRIPTS='tomcat-deploy-pipeline'
    # BUILD_HOME='/var/lib/jenkins/workspace'
     }
     agent none
