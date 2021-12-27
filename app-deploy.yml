@@ -6,7 +6,7 @@
     - 
       name: "restart firewalld"
       service: "name=firewalld state=restarted"
-  hosts: servers
+  hosts: myhost
   name: "Deploy tomcat for centos7"
   tasks: 
     - 
