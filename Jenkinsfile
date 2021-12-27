@@ -23,7 +23,8 @@ pipeline {
             steps {
                 echo 'Deploy stage, '
               sh '''#!/bin/bash
-                   cd $BUILD_HOME/$BUILD_SCRIPTS
+              cd tomcat04
+              #     cd $BUILD_HOME/$BUILD_SCRIPTS
               #     cd sample-tomcat-deploy/ansible-tomcat-deploy
                    ansible-playbook app-deploy.yml 
                '''    
