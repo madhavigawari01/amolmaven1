@@ -1,0 +1,74 @@
+--- 
+- 
+  become: true
+  gather_facts: false
+  handlers: 
+    - 
+      name: "restart firewalld"
+      service: "name=firewalld state=restarted"
+  hosts: "10.0.0.5"
+  name: "Deploy tomcat for centos7"
+  tasks: 
+    - 
+      name: "Enable EPEL for centos7"
+      yum: 
+        name: "https://dl.fedoraproject.org/pub/epel/epel-release-latest-7.noarch.rpm"
+        state: present
+    - 
+      name: "Import EPEL GPG key."
+      rpm_key: 
+        key: /etc/pki/rpm-gpg/RPM-GPG-KEY-EPEL-7
+        state: present
+    - 
+      name: "Install packages"
+      with_items: 
+        - java-1.8.0-openjdk
+        - java-1.8.0-openjdk-devel
+        - wget
+      yum: "update_cache=yes name=\"{{ item }}\" state=present"
+    - 
+      command: "setenforce 0"
+      name: "Disable SELinux"
+    - 
+      file: 
+        group: root
+        mode: 493
+        owner: root
+        path: "/usr/share/{{ tomcat_server }}"
+        state: directory
+      name: "Create Tomcat Server Directory"
+    - 
+      command: "wget  http://archive.apache.org/dist/tomcat/{{ tomcat_major }}/v{{ tomcat_version }}/bin/apache-tomcat-{{ tomcat_version }}.tar.gz -P /usr/share/{{ tomcat_server }}"
+      name: "Get tomcat tarball"
+    - 
+      command: "tar -C /usr/share/{{ tomcat_server }} -xzf /usr/share/{{ tomcat_server }}/apache-tomcat-{{ tomcat_version }}.tar.gz"
+      name: "Extract downloaded tomcat tarball"
+    - 
+      name: "Copy server.xml and tomcat-users.xml files"
+      template: 
+        dest: "{{ item.dest }}"
+        mode: 420
+        src: "{{ item.src }}"
+      with_items: 
+        - 
+          dest: "/usr/share/{{ tomcat_server }}/apache-tomcat-{{ tomcat_version }}/conf/server.xml"
+          src: server.xml.j2
+        - 
+          dest: "/usr/share/{{ tomcat_server }}/apache-tomcat-{{ tomcat_version }}/conf/tomcat-users.xml"
+          src: tomcat-users.xml.j2
+    - 
+      firewalld: 
+        permanent: true
+        port: "{{ item.port | default(item) }}/tcp"
+        state: enabled
+      name: "Open Tomcat ports in firewalld"
+      notify: 
+        - "restart firewalld"
+      with_items: 
+        - "{{ tomcat_webui }}"
+        - "{{ tomcat_serverport }}"
+    - 
+      command: "/usr/share/{{ tomcat_server }}/apache-tomcat-{{ tomcat_version }}/bin/startup.sh"
+      name: "Start tomcat"
+  vars_files: 
+    - vars.yml
