@@ -1,5 +1,5 @@
 - name: Deploy tomcat for centos7
-   hosts: 10.0.0.5
+   hosts: 10.0.0.1
    gather_facts: no
    become: true
    vars_files:
