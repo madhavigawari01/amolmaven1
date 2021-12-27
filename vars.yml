@@ -1,4 +1,4 @@
-tomcat_server: ServerA
+tomcat_server: 10.0.0.5
 tomcat_major: tomcat-8
 tomcat_version: 8.0.9
 tomcat_serverport: "8005"
