@@ -24,7 +24,7 @@ pipeline {
                 echo 'Deploy stage, '
               sh '''#!/bin/bash
                 cd $BUILD_HOME/$BUILD_SCRIPTS
-                cd amolmaven1/app-deploy.yml 
+                cd tomcat04/amolmaven1/
                    ansible-playbook app-deploy.yml 
                '''    
                 }
